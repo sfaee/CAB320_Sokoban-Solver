@@ -82,7 +82,7 @@ def taboo_cells(warehouse):
     targets = set(warehouse.targets)
 
     def wall(x,y):
-        return (X,y) in walls
+        return (x,y) in walls
     
     taboo = set()
 
@@ -102,7 +102,35 @@ def taboo_cells(warehouse):
                     taboo.add((x, y))
 
     # -- Rule 2 -- #
-    for y in range(H):
+    for y in range(R):
+        corner = [x for x in range(C) if (x,y) in taboo]
+        for i in range(len(corner)-1):
+            x1, x2 = corner[i], corner[i+1]
+            segment = [(x, y) for x in range(x1+1, x2)]
+            if all ((x,y) not in targets for x, y in segment):
+                taboo.update(segment)
+
+    for x in range(C):
+        corner = [y for y in range(R) if (x,y) in taboo]
+        for i in range(len(corner)-1):
+            y1, y2 = corner[i], corner[i+1]
+            segment = [(x, y) for y in range(y1+1, y2)]
+            if all ((x,y) not in targets for x, y in segment):
+                taboo.update(segment)
+
+    out = []
+    for y in range(C):
+        row = ""
+        for x in range (C):
+            if (x,y) in walls:
+                row += '#'
+            elif (x,y) in taboo:
+                row += "X"
+            else:
+                row += " "
+        out.append(row)
+    
+    return "\n".join(out)
         
 
     # raise NotImplementedError()

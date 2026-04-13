@@ -42,7 +42,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-    return [ (11159677, 'Saskia', 'Wells'), ]
+    return [ (11159677, 'Saskia', 'Wells'), (12059544, 'Harrison', 'Mollenhauer'), ]
 #    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
     raise NotImplementedError()
 
@@ -74,25 +74,6 @@ def taboo_cells(warehouse):
        and the boxes.  
     '''
     ##         "INSERT YOUR CODE HERE" 
-    ## Rule 1
-    """ if (
-        ([x-1][y] == "#" and [x][y-1] = '#') or
-        ([x+1][y] == "#" and [x][y-1] = '#') or
-        ([x-1][y] == "#" and [x][y+1] = '#') or
-        ([x+1][y] == "#" and [x][y+1] = '#')
-        ):
-        if (yield != "."):
-            yield = 'X'
-
-    ##Rule 2
-    for (X<space<X):
-        if (X<x<X):
-            if (x=space and x != '.'):
-                space = 'X'
-
-        if (X<y<X):
-            if (y=space and y != '.'):
-                space = 'X' """
     
     C = warehouse.ncols
     R = warehouse.nrows
@@ -124,7 +105,7 @@ def taboo_cells(warehouse):
     for y in range(H):
         
 
-    raise NotImplementedError()
+    # raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -42,7 +42,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-    return [ (11159677, 'Saskia', 'Wells'), (12059544, 'Harrison', 'Mollenhauer'), ]
+    return [ (11159677, 'Saskia', 'Wells'), (12059544, 'Harrison', 'Mollenhauer'), (11323442, 'Joshua', 'Oates')]
 #    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
     raise NotImplementedError()
 
@@ -73,7 +73,6 @@ def taboo_cells(warehouse):
        The returned string should NOT have marks for the worker, the targets,
        and the boxes.  
     '''
-    ##         "INSERT YOUR CODE HERE" 
     
     C = warehouse.ncols
     R = warehouse.nrows
@@ -196,8 +195,43 @@ def check_elem_action_seq(warehouse, action_seq):
                the sequence of actions.  This must be the same string as the
                string returned by the method  Warehouse.__str__()
     '''
+
+    DIR = {
+        'Left': (-1, 0),
+        'Right': (1, 0),
+        'Up': (0, -1),
+        'Down': (0, 1)
+    }
+
+    wh = warehouse.copy()
+    worker = list(wh.worker)
+    boxes = set(wh.boxes)
+    walls = set(wh.walls)
+
+    for action in action_seq:
+
+        if action not in DIR:
+            return "Impossible"
+        
+        dx, dy = DIR[action]
+        wx, wy = worker
+        nx, ny = wx + dx, wy+dy
+
+        if (nx, ny) in walls:
+            return "Impossible"
+        
+        if (nx, ny) in boxes:
+            bx, by = nx + dx, ny + dy
+
+            if (bx, by) in walls or (bx, by) in boxes:
+                return "Impossible"
+            
+            boxes.remove((nx, ny))
+            boxes.add((bx, by))
+        
+        worker = [nx, ny]
     
-    ##         "INSERT YOUR CODE HERE"
+    return warehouse.copy(worker=tuple(worker), boxes=tuple(sorted(boxes))).__str__()
     
     raise NotImplementedError()
 

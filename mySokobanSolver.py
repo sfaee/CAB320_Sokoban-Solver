@@ -107,7 +107,9 @@ def taboo_cells(warehouse):
             x1, x2 = corner[i], corner[i+1]
             segment = [(x, y) for x in range(x1+1, x2)]
             if all ((x,y) not in targets for x, y in segment):
-                taboo.update(segment)
+                for (x,y) in segment:
+                    if (x,y) not in walls:
+                        taboo.add((x,y))
 
     for x in range(C):
         corner = [y for y in range(R) if (x,y) in taboo]
@@ -115,10 +117,12 @@ def taboo_cells(warehouse):
             y1, y2 = corner[i], corner[i+1]
             segment = [(x, y) for y in range(y1+1, y2)]
             if all ((x,y) not in targets for x, y in segment):
-                taboo.update(segment)
+                for (x,y) in segment:
+                    if (x,y) not in walls:
+                        taboo.add((x,y))
 
     out = []
-    for y in range(C):
+    for y in range(R):
         row = ""
         for x in range (C):
             if (x,y) in walls:

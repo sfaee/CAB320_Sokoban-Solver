@@ -188,7 +188,36 @@ class SokobanPuzzle(search.Problem):
         Return the list of actions that can be executed in the given state.
         
         """
-        raise NotImplementedError
+        wh = state.copy()
+        worker = list(wh.worker)
+        boxes = set(wh.boxes)
+        walls = set(wh.walls)
+
+        possible = []
+
+        DIR = {
+        'Left': (-1, 0),
+        'Right': (1, 0),
+        'Up': (0, -1),
+        'Down': (0, 1)
+        }
+        wx,wy = worker
+
+        for action in DIR:
+            # check each actions possible before adding action to possible list
+            dx,dy = DIR[action]
+            nx,ny = wx + dx, wy + dy
+            if (nx, ny) in walls:
+                continue
+            if (nx, ny) in boxes:
+                bx, by = nx + dx, ny + dy
+                if (bx, by) in walls or (bx, by) in boxes:
+                    continue
+            possible.append(action)    
+
+        return possible
+        
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

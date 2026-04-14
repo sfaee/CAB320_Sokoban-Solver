@@ -43,7 +43,6 @@ def my_team():
     
     '''
     return [ (11159677, 'Saskia', 'Wells'), (12059544, 'Harrison', 'Mollenhauer'), (11323442, 'Joshua', 'Oates')]
-#    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
     raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -85,7 +84,20 @@ def taboo_cells(warehouse):
     
     taboo = set()
 
+    rows = []
+    for y in range(R):
+        row = ""
+        for x in range(C):
+            if (x, y) in walls:
+                row += "#"
+            else:
+                row += " "
+        rows.append(row)
+
+    trimmed_len = [len(rows[y].rstrip()) for y in range(R)]
+
     # -- Rule 1 -- #
+
     def corner(x,y):
         return (
             (wall(x-1, y) and wall(x, y-1)) or
@@ -96,6 +108,8 @@ def taboo_cells(warehouse):
     
     for y in range(R):
         for x in range(C):
+            if x >= trimmed_len[y]:
+                continue
             if (x, y) not in walls and (x, y) not in targets:
                 if corner(x, y):
                     taboo.add((x, y))
@@ -106,6 +120,7 @@ def taboo_cells(warehouse):
         for i in range(len(corner)-1):
             x1, x2 = corner[i], corner[i+1]
             segment = [(x, y) for x in range(x1+1, x2)]
+            segment = [(x, y) for (x, y) in segment if x < trimmed_len[y]]
             if all ((x,y) not in targets for x, y in segment):
                 for (x,y) in segment:
                     if (x,y) not in walls:
@@ -116,6 +131,7 @@ def taboo_cells(warehouse):
         for i in range(len(corner)-1):
             y1, y2 = corner[i], corner[i+1]
             segment = [(x, y) for y in range(y1+1, y2)]
+            segment = [(x, y) for (x, y) in segment if x < trimmed_len[y]]
             if all ((x,y) not in targets for x, y in segment):
                 for (x,y) in segment:
                     if (x,y) not in walls:

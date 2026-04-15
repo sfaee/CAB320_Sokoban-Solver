@@ -248,7 +248,41 @@ class SokobanPuzzle(search.Problem):
 
         return wh.copy(worker=tuple(worker), boxes=tuple(sorted(boxes)))
 
-        
+    def goal_test(self, state):
+        """Return True if the state is a goal. The default method compares the
+        state to self.goal, as specified in the constructor. Override this
+        method if checking against a single self.goal is not enough."""
+
+        return state == self.goal
+
+
+    def path_cost(self, c, state1, action, state2):
+        """Return the cost of a solution path that arrives at state2 from
+        state1 via action, assuming cost c to get up to state1. If the problem
+        is such that the path doesn't matter, this function will only look at
+        state2.  If the path does matter, it will consider c and maybe state1
+        and action. The default method costs 1 for every step in the path."""
+
+        ## this function checks the difference in box positions as only they are weighted
+        # the fucntion assumes since the states are from the same game, the weights of the boxes are the same and the boxes are also ordered the same.
+        # since it checks box location difference, the action variable is unused. 
+        #
+
+
+        wh1 = state1.copy()
+        wh2 = state2.copy()
+
+        boxes1 = list(wh1.boxes)
+        boxes2 = list(wh2.boxes)
+
+        weights = list(wh1.weights)
+        i = 0
+        for i in range(len(boxes1)):
+            if boxes1[i] != boxes2[i]:
+                return c + weights[i]
+
+        return c + 1
+
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -216,6 +216,38 @@ class SokobanPuzzle(search.Problem):
             possible.append(action)    
 
         return possible
+    def result(self, state, action):
+        """Return the state that results from executing the given
+        action in the given state. The action must be one of
+        self.actions(state)."""
+
+        DIR = {
+        'Left': (-1, 0),
+        'Right': (1, 0),
+        'Up': (0, -1),
+        'Down': (0, 1)
+        }
+
+        wh = state.copy()
+        worker = list(wh.worker)
+        boxes = set(wh.boxes)
+
+        wx, wy = worker
+        dx,dy = DIR[action]
+        nx,ny = wx+dx, wy+dy
+
+        if (nx, ny) in boxes:
+            bx, by = nx + dx, ny + dy
+
+        
+            boxes.remove((nx, ny))
+            boxes.add((bx, by))
+        
+        worker = [nx, ny]
+
+
+        return wh.copy(worker=tuple(worker), boxes=tuple(sorted(boxes)))
+
         
 
 

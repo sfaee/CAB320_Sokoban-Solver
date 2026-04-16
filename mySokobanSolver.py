@@ -283,9 +283,7 @@ class SokobanPuzzle(search.Problem):
 
         return c + 1
 
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    - - - - - - - - - - - - - - - - - - - - - - - -
 
 def check_elem_action_seq(warehouse, action_seq):
     '''
@@ -376,6 +374,45 @@ def solve_weighted_sokoban(warehouse):
             C is the total cost of the action sequence C
 
     '''
+
+    ## plan
+    #hueristic, used for astar search
+    def hueristic(node):
+        #hueristic
+
+        state = node.state
+
+        boxes = state.boxes
+        targets = state.targets
+
+        estimatedcost = 0
+        for box in boxes:
+            minDist = abs(box[0] - targets[0][0]) + abs(box[1] - targets[0][1])
+
+            for target in targets:
+                dist = abs(box[0] - target[0]) + abs(box[1] - target[1])
+                minDist = min(minDist, dist)
+
+            estimatedcost += minDist
+        return estimatedcost
+# - - - - - - - - - - - - - - - 
+
+
+    # takes node as input, measures sum of distance for each box to closest target
+    # astar function returns node 
+    # node object has function solution and value for path cost
+    
+    problem = SokobanPuzzle(warehouse)
+
+    solution = search.astar_graph_search(problem, hueristic)
+    # solution is a node
+    C = solution.path_cost
+    S = solution.solution()
+
+    return S, C
+
+
+
     
     raise NotImplementedError()
 

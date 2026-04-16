@@ -283,7 +283,7 @@ class SokobanPuzzle(search.Problem):
 
         return c + 1
 
-    - - - - - - - - - - - - - - - - - - - - - - - -
+#    - - - - - - - - - - - - - - - - - - - - - - - -
 
 def check_elem_action_seq(warehouse, action_seq):
     '''

@@ -181,17 +181,19 @@ class SokobanPuzzle(search.Problem):
 
     
     def __init__(self, warehouse):
-        raise NotImplementedError()
+        self.walls = set(warehouse.walls)
+        self.targets = set(warehouse.targets)
+        self.weights = list(warehouse.weights)
+
+        self.init = (warehouse.worker, tuple(warehouse.boxes))
 
     def actions(self, state):
         """
         Return the list of actions that can be executed in the given state.
         
         """
-        wh = state.copy()
-        worker = list(wh.worker)
-        boxes = set(wh.boxes)
-        walls = set(wh.walls)
+        worker, boxes = state
+        boxes = set(boxes)
 
         possible = []
 
@@ -203,23 +205,27 @@ class SokobanPuzzle(search.Problem):
         }
         wx,wy = worker
 
-        for action in DIR:
+        for action, (dx, dy) in DIR.items():
             # check each actions possible before adding action to possible list
-            dx,dy = DIR[action]
-            nx,ny = wx + dx, wy + dy
-            if (nx, ny) in walls:
+            nx, ny = wx + dx, wy + dy
+
+            if (nx, ny) in self.walls:
                 continue
             if (nx, ny) in boxes:
-                bx, by = nx + dx, ny + dy
-                if (bx, by) in walls or (bx, by) in boxes:
+                bx2, by2 = nx + dx, ny + dy
+                if (bx2, by2) in self.walls or (bx2, by2) in boxes:
                     continue
-            possible.append(action)    
+            possible.append(action)      
 
         return possible
+    
     def result(self, state, action):
         """Return the state that results from executing the given
         action in the given state. The action must be one of
         self.actions(state)."""
+
+        worker, boxes = state
+        boxes  = list(boxes)
 
         DIR = {
         'Left': (-1, 0),
@@ -228,32 +234,25 @@ class SokobanPuzzle(search.Problem):
         'Down': (0, 1)
         }
 
-        wh = state.copy()
-        worker = list(wh.worker)
-        boxes = set(wh.boxes)
-
         wx, wy = worker
         dx,dy = DIR[action]
         nx,ny = wx+dx, wy+dy
 
         if (nx, ny) in boxes:
-            bx, by = nx + dx, ny + dy
-
+            i = boxes.index((nx, ny))
+            bx, by = boxes[i]
+            boxes[1] = (bx + dx, by + dy)
         
-            boxes.remove((nx, ny))
-            boxes.add((bx, by))
-        
-        worker = [nx, ny]
-
-
-        return wh.copy(worker=tuple(worker), boxes=tuple(sorted(boxes)))
+        return ((nx, ny), tuple(sorted(boxes)))
 
     def goal_test(self, state):
         """Return True if the state is a goal. The default method compares the
         state to self.goal, as specified in the constructor. Override this
         method if checking against a single self.goal is not enough."""
 
-        return state == self.goal
+        worker, boxes = state
+        return all (b in self.targets for b in boxes)
+    
 
 
     def path_cost(self, c, state1, action, state2):
@@ -269,19 +268,27 @@ class SokobanPuzzle(search.Problem):
         #
 
 
-        wh1 = state1.copy()
-        wh2 = state2.copy()
+        _, boxes1 = state1
+        _, boxes2 = state2
 
-        boxes1 = list(wh1.boxes)
-        boxes2 = list(wh2.boxes)
+        boxes1 = list(boxes1)
+        boxes2 = list(boxes2)
 
-        weights = list(wh1.weights)
-        i = 0
         for i in range(len(boxes1)):
             if boxes1[i] != boxes2[i]:
-                return c + weights[i]
+                return c + self.weights[i]
 
         return c + 1
+    
+    def h(self, node):
+        worker, boxes = node.state
+        h_val = 0
+
+        for (bx, by) in boxes:
+            min_dist = min(abs(bx - tx) + abs(by - ty) for (tx, ty) in self.targets)
+            h_val += min_dist
+
+        return h_val
 
 #    - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -374,6 +381,18 @@ def solve_weighted_sokoban(warehouse):
             C is the total cost of the action sequence C
 
     '''
+
+    problem = SokobanPuzzle(warehouse)
+
+    solution_node = search.astar_graph_search(problem, problem.h)
+
+    if solution_node is None:
+        return "Impossible", None
+    
+    actions = solution_node.solution()
+    cost = solution_node.path_cost
+
+    return actions, cost
 
     ## plan
     #hueristic, used for astar search

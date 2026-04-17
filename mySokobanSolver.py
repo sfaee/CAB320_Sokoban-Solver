@@ -241,9 +241,9 @@ class SokobanPuzzle(search.Problem):
         if (nx, ny) in boxes:
             i = boxes.index((nx, ny))
             bx, by = boxes[i]
-            boxes[1] = (bx + dx, by + dy)
+            boxes[i] = (bx + dx, by + dy)
         
-        return ((nx, ny), tuple(sorted(boxes)))
+        return ((nx, ny), tuple(boxes))
 
     def goal_test(self, state):
         """Return True if the state is a goal. The default method compares the

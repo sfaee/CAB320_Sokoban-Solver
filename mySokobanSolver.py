@@ -185,7 +185,7 @@ class SokobanPuzzle(search.Problem):
         self.targets = set(warehouse.targets)
         self.weights = list(warehouse.weights)
 
-        self.init = (warehouse.worker, tuple(warehouse.boxes))
+        self.initial = (warehouse.worker, tuple(warehouse.boxes))
 
     def actions(self, state):
         """
